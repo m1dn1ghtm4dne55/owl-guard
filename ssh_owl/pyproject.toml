@@ -1,0 +1,18 @@
+[project]
+name = "ssh-owl"
+version = "0.1.0"
+description = "Lightweight systemd-based watcher that tracks user login sessions via loginctl and sends real-time SSH login/logout notifications to a Telegram bot."
+authors = [
+    {name = "m1dn1ghtm4dne55",email = "a.parezhev@outlook.com"}
+]
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+    "urllib3 (>=2.5.0,<3.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
