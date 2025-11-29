@@ -1,5 +1,5 @@
 from typing import Optional
-from subprocess import run, PIPE
+from subprocess import run, PIPE, CalledProcessError
 
 
 class SessionsLooker:
@@ -23,7 +23,14 @@ class SessionsLooker:
         return self._sessions_old
 
     def get_login_users(self):
-        users = run('loginctl', stdout=PIPE).stdout.decode()
-        result = str(users).split('\n')[1:-3]
-        self._sessions_old = result
-        return result
+        try:
+            command = run('loginctl', stdout=PIPE, stderr=PIPE, text=True)
+            stdout = str(command.stdout)
+            stderr = str(command.stderr)
+            users = stdout.split('\n')[1:-3]
+            if stderr:
+                print('ошибка ',stderr)
+            self._sessions_old = users
+            return users
+        except CalledProcessError as e:
+            print(f'Ошибка при получение подключкнных пользователей {e}')
