@@ -24,8 +24,6 @@ class SessionsLooker:
 
     def get_login_users(self):
         users = run('loginctl', stdout=PIPE).stdout.decode()
-        print(users)
         result = str(users).split('\n')[1:-3]
-        print(result)
         self._sessions_old = result
         return result
