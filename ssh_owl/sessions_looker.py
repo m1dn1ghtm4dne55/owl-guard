@@ -19,6 +19,7 @@ class SessionsLooker:
     def set_ssh_user_count(self, user_count_now: int):
         self._ssh_users_count = user_count_now
 
+    @property
     def get_ssh_user_old(self):
         return self._sessions_old
 
