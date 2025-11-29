@@ -1,10 +1,9 @@
 from typing import Optional
+from subprocess import run, PIPE
 
 
 class SessionsLooker:
-    def __init__(self, sleep_time:int = 1):
-        self.sleep_time = sleep_time
-        self._sessions_now: Optional[list[str]] = None
+    def __init__(self):
         self._sessions_old: Optional[list[str]] = None
         self._ssh_users_count: int = 0
 
@@ -13,11 +12,20 @@ class SessionsLooker:
             return False
         return True
 
-    def get_ssh_user_count(self):
+    @property
+    def get_ssh_user_count(self) -> int:
         return self._ssh_users_count
 
-    def get_ssh_user_now(self):
-        return self._sessions_now
+    def set_ssh_user_count(self, user_count_now: int):
+        self._ssh_users_count = user_count_now
 
     def get_ssh_user_old(self):
         return self._sessions_old
+
+    def get_login_users(self):
+        users = run('loginctl', stdout=PIPE).stdout.decode()
+        print(users)
+        result = str(users).split('\n')[1:-3]
+        print(result)
+        self._sessions_old = result
+        return result
