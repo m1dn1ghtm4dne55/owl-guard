@@ -27,10 +27,10 @@ if __name__ == '__main__':
             for user in ssh_users:
                 http_manager.send_message_to_user(user)
         else:
-            if session_manager.get_ssh_user_count != len(ssh_users):
+            if not session_manager.check_ssh_users_count(len(ssh_users)):
                 count_difference = session_manager.get_ssh_user_count - len(ssh_users)
                 session_manager.set_ssh_user_count(len(ssh_users))
-                last_user = session_manager.get_ssh_user_old()[-1]
+                last_user = session_manager.get_ssh_user_old[-1]
                 if count_difference > 0:
                     http_manager.send_message_to_user(f'{datetime.now()} | Отключился пользователь {last_user}\n')
                 else:
