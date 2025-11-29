@@ -34,4 +34,4 @@ if __name__ == '__main__':
                 if count_difference > 0:
                     http_manager.send_message_to_user(f'{datetime.now()} | Отключился пользователь {last_user}\n')
                 else:
-                    http_manager.send_message_to_user(f'{datetime.now()} | Отключился пользователь {last_user}\n')
+                    http_manager.send_message_to_user(f'{datetime.now()} | Подключился пользователь {last_user}\n')
