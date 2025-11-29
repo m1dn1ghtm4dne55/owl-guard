@@ -28,4 +28,3 @@ class MessageSender:
                     print(response.status)
             except Exception as e:
                 print(f'Ошибка при отправке сообщения {e}')
-
