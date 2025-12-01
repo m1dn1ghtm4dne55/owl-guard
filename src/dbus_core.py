@@ -41,7 +41,7 @@ class LogingSessionProperties(DBusConnector):
 
     async def on_session_new(self, _id, _path):
         interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=_path,
-                                                 interface='org.freedesktop.DBus.Properties')
+                                                 interface=self._properties_interface)
         session_properties = await interface.call_get_all(self._session_interface)
         for key, value in session_properties.items():
             print(key, value, sep=' | ')
