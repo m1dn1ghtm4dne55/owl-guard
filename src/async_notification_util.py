@@ -1,6 +1,4 @@
-import json
 from os import getenv
-import asyncio
 
 from dotenv import load_dotenv
 from aiohttp import ClientSession, TCPConnector
