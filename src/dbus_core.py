@@ -15,12 +15,13 @@ http_manager = AsyncMessageSender(TOKEN, USER_ID)
 
 
 class DBusConnector:
-    def __init__(self) -> None:
+    def __init__(self, bus_type: BusType = BusType.SYSTEM) -> None:
         self._bus: MessageBus | None = None
+        self.bus_type = bus_type
 
     async def dbus_connect(self) -> MessageBus:
         if self._bus is None:
-            self._bus = await MessageBus(bus_type=BusType.SYSTEM).connect()
+            self._bus = await MessageBus(bus_type=self.bus_type).connect()
         return self._bus
 
     async def get_bus_interface(self, bus_name, _path, interface):
