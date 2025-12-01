@@ -18,13 +18,13 @@ class DBusConnector:
     def __init__(self) -> None:
         self._bus: MessageBus | None = None
 
-    async def get_bus(self) -> MessageBus:
+    async def dbus_connect(self) -> MessageBus:
         if self._bus is None:
             self._bus = await MessageBus(bus_type=BusType.SYSTEM).connect()
         return self._bus
 
     async def get_bus_interface(self, bus_name, _path, interface):
-        dbus = await self.get_bus()
+        dbus = await self.dbus_connect()
         session_intro = await dbus.introspect(bus_name=bus_name, path=_path, timeout=2.0)
         session_object = dbus.get_proxy_object(bus_name=bus_name, path=_path, introspection=session_intro)
         interface = session_object.get_interface(interface)
