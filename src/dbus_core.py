@@ -26,8 +26,8 @@ class DBusConnector:
     async def get_bus_interface(self, bus_name, _path, interface):
         dbus = await self.get_bus()
         session_intro = await dbus.introspect(bus_name=bus_name, path=_path, timeout=2.0)
-        session_obj = dbus.get_proxy_object(bus_name=bus_name, path=_path, introspection=session_intro)
-        interface = session_obj.get_interface(interface)
+        session_object = dbus.get_proxy_object(bus_name=bus_name, path=_path, introspection=session_intro)
+        interface = session_object.get_interface(interface)
         return interface
 
 
@@ -41,10 +41,10 @@ class LogingSessionProperties(DBusConnector):
     async def on_session_new(self, _id, _path):
         interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=_path,
                                                  interface='org.freedesktop.DBus.Properties')
-        props = await interface.call_get_all(self._session_interface)
-        for key, value in props.items():
+        session_properties = await interface.call_get_all(self._session_interface)
+        for key, value in session_properties.items():
             print(key, value, sep=' | ')
-        # await http_manager.send_message_to_user(f'Новая сессия SSH {_id}\n{_path}\nСвойства сессии: {props}')
+        # await http_manager.send_message_to_user(f'Новая сессия SSH {_id}\n{_path}\nСвойства сессии: {session_properties}')
 
     async def on_session_removed(self, _id, _path):
         print(_id, _path)
