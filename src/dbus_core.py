@@ -43,10 +43,10 @@ class DBusConnector:
             interface = session_object.get_interface(interface)
             return interface
         except asyncio.TimeoutError as e:
-            self._logger.error(f'Asyncio TimeoutError in get Dbus interface {e}')
+            self._logger.error(f'Asyncio TimeoutError in get DBus interface {e}')
             raise
         except DBusError as e:
-            self._logger.error(f'DBus Error in get D`bus interface {e}')
+            self._logger.error(f'DBus Error in get Dbus interface {e}')
             raise
 
 
