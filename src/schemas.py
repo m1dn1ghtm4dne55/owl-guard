@@ -1,36 +1,35 @@
 from typing import Optional, Tuple
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict
 
 class LoginSessionShort(BaseModel):
-    Id: str
-    User: Tuple[int, str]
-    Remote: bool
-    RemoteHost: Optional[str]
-    RemoteUser: Optional[str]
-    Service: Optional[str]
-    Type: str
-    Class: str
-    Active: bool
-    State: str
-    Timestamp: int
+    id: str = Field(alias='Id')
+    user: Tuple[int, str] = Field(alias='User')
+    remote: bool = Field(alias='Remote')
+    remote_host: Optional[str] = Field(alias='RemoteHost')
+    remote_user: Optional[str] = Field(alias='RemoteUser')
+    service: Optional[str] = Field(alias='Service')
+    type: str = Field(alias='Type')
+    class_: str = Field(alias='Class')
+    active: bool = Field(alias='Active')
+    state: str = Field(alias='State')
+    timestamp: int = Field(alias='Timestamp')
 
     model_config = ConfigDict(populate_by_name=True)
 
 class LoginSessionProperties(LoginSessionShort):
-    Name: str
-    TimestampMonotonic: int
-    VTNr: int
-    Seat: Tuple[str, str]
-    TTY: Optional[str]
-    Display: Optional[str]
-    Desktop: Optional[str]
-    Scope: Optional[str]
-    Leader: int
-    Audit: int
-    IdleHint: bool
-    IdleSinceHint: Optional[int]
-    IdleSinceHintMonotonic: Optional[int]
-    LockedHint: bool
-
+    name: str = Field(alias='Name')
+    timestamp_monotonic: int = Field(alias='TimestampMonotonic')
+    vtnr: int = Field(alias='VTNr')
+    seat: Tuple[str, str] = Field(alias='Seat')
+    tty: Optional[str] = Field(alias='TTY')
+    display: Optional[str] = Field(alias='Display')
+    desktop: Optional[str] = Field(alias='Desktop')
+    scope: Optional[str] = Field(alias='Scope')
+    leader: int = Field(alias='Leader')
+    audit: int = Field(alias='Audit')
+    idle_hint: bool = Field(alias='IdleHint')
+    idle_since_hint: Optional[int] = Field(alias='IdleSinceHint')
+    idle_since_hint_monotonic: Optional[int] = Field(alias='IdleSinceHintMonotonic')
+    locked_hint: bool = Field(alias='LockedHint')
 
