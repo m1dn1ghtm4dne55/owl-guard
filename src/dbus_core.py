@@ -112,7 +112,7 @@ class LogingBusPooler(LogingSessionProperties):
             interface.on_session_new(self.on_session_new)
             interface.on_session_removed(self.on_session_removed)
             sessions = await interface.call_list_sessions()
-            self._logger.__init__(f'List active session {sessions}')
+            self._logger.info(f'List active session {sessions}')
             print(sessions)
             # await self._http_manager.send_message_to_user(f'Текущие сессии: {sessions}')
             await self._shutdown_event.wait()
