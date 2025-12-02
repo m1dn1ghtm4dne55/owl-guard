@@ -11,12 +11,14 @@ from schemas import LoginSessionShort
 from utils.logger.log_manager import get_logger
 from utils.dbus_utils import human_read_response
 
+
 class DBusConnector:
     def __init__(self, bus_type: BusType = BusType.SYSTEM) -> None:
         self._bus: Optional[MessageBus] = None
         self.bus_type = bus_type
         self._logger = get_logger('dev')
         self._timeout = 2.0
+        self._shutdown_event = asyncio.Event()
 
     async def dbus_connect(self) -> MessageBus:
         if self._bus is None:
@@ -27,6 +29,10 @@ class DBusConnector:
                 self._logger.error(f'DBusError connection {e}')
                 raise
         return self._bus
+
+    def shutdown(self):
+        self._logger.info("Shutdown initiated")
+        self._shutdown_event.set()
 
     async def get_bus_interface(self, bus_name, _path, interface):
         try:
@@ -43,6 +49,7 @@ class DBusConnector:
             self._logger.error(f'DBus Error in get D`bus interface {e}')
             raise
 
+
 class LogingSessionProperties(DBusConnector):
     def __init__(self):
         super().__init__()
@@ -50,7 +57,6 @@ class LogingSessionProperties(DBusConnector):
         self._properties_interface: str = 'org.freedesktop.DBus.Properties'
         self._session_interface: str = 'org.freedesktop.login1.Session'
         self._http_manager = AsyncMessageSender(TOKEN, USER_ID)
-
 
     async def _get_session_property(self, _id, _path):
         try:
@@ -79,6 +85,7 @@ class LogingSessionProperties(DBusConnector):
 
     async def on_session_removed(self, _id, _path):
         print(_id, _path)
+        self.shutdown()
         # await self._http_manager.send_message_to_user()
 
 
@@ -87,6 +94,16 @@ class LogingBusPooler(LogingSessionProperties):
         self._loging_path = '/org/freedesktop/login1'
         self._loging_manager_interface = 'org.freedesktop.login1.Manager'
         super().__init__()
+
+    async def _cleanup_resources(self):
+        try:
+            if self._bus:
+                self._bus.disconnect()
+                self._logger.info('DBus connection disconnected')
+        except Exception as e:
+            self._logger.error(f'Error shutdown: {e}')
+        finally:
+            self._logger.info('Shutdown completed')
 
     async def look_sessions(self):
         try:
@@ -99,7 +116,8 @@ class LogingBusPooler(LogingSessionProperties):
             self._logger.__init__(f'List active session {sessions}')
             print(sessions)
             # await self._http_manager.send_message_to_user(f'Текущие сессии: {sessions}')
-            await asyncio.Future()
+            await self._shutdown_event.wait()
+            await self._cleanup_resources()
         except DBusError as e:
             self._logger.error(f'DBus error in look session pooler {e}')
             raise
