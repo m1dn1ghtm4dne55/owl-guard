@@ -30,7 +30,7 @@ class DBusConnector:
 
     async def get_bus_interface(self, bus_name, _path, interface):
         try:
-            self._logger.info('Get DBus Interface')
+            self._logger.info(f'Get DBus Interface {_path} {interface} {bus_name}')
             dbus = await self.dbus_connect()
             session_intro = await dbus.introspect(bus_name=bus_name, path=_path, timeout=self._timeout)
             session_object = dbus.get_proxy_object(bus_name=bus_name, path=_path, introspection=session_intro)
@@ -54,7 +54,7 @@ class LogingSessionProperties(DBusConnector):
 
     async def _get_session_property(self, _id, _path):
         try:
-            self._logger.info('Get session properties')
+            self._logger.info(f'Get session {_id} properties')
             interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=_path,
                                                      interface=self._properties_interface)
             session_properties = await interface.call_get_all(self._session_interface)
@@ -67,7 +67,7 @@ class LogingSessionProperties(DBusConnector):
     async def on_session_new(self, _id, _path):
         payload = await self._get_session_property(_id, _path)
         try:
-            self._logger.info('Send info about new login session to webhook')
+            self._logger.info(f'Send info about new login session {_id} to webhook')
             response = human_read_response(payload=LoginSessionShort(**payload).model_dump())
             await self._http_manager.send_message_to_user(response)
         except ValidationError as e:
@@ -95,8 +95,8 @@ class LogingBusPooler(LogingSessionProperties):
                                                      interface=self._loging_manager_interface)
             interface.on_session_new(self.on_session_new)
             interface.on_session_removed(self.on_session_removed)
-            self._logger.__init__('List active session')
             sessions = await interface.call_list_sessions()
+            self._logger.__init__(f'List active session {sessions}')
             print(sessions)
             # await self._http_manager.send_message_to_user(f'Текущие сессии: {sessions}')
             await asyncio.Future()
