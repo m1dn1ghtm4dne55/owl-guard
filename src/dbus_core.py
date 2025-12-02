@@ -85,7 +85,6 @@ class LogingSessionProperties(DBusConnector):
 
     async def on_session_removed(self, _id, _path):
         print(_id, _path)
-        self.shutdown()
         # await self._http_manager.send_message_to_user()
 
 
