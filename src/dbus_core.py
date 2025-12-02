@@ -43,7 +43,7 @@ class DBusConnector:
             interface = session_object.get_interface(interface)
             return interface
         except asyncio.TimeoutError as e:
-            self._logger.error(f'Asyncio TimeoutError in get D`bus interface {e}')
+            self._logger.error(f'Asyncio TimeoutError in get Dbus interface {e}')
             raise
         except DBusError as e:
             self._logger.error(f'DBus Error in get D`bus interface {e}')
@@ -67,7 +67,7 @@ class LogingSessionProperties(DBusConnector):
             session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
             return session_properties_dict
         except DBusError as e:
-            self._logger.error(f'Dbus tError in get session properties {e}')
+            self._logger.error(f'Dbus Error in get session properties {e}')
             raise
 
     async def on_session_new(self, _id, _path):
