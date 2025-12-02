@@ -32,4 +32,3 @@ class LoginSessionProperties(LoginSessionShort):
     idle_since_hint: Optional[int] = Field(alias='IdleSinceHint')
     idle_since_hint_monotonic: Optional[int] = Field(alias='IdleSinceHintMonotonic')
     locked_hint: bool = Field(alias='LockedHint')
-
