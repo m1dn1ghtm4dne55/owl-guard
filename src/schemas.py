@@ -4,10 +4,10 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class LoginSessionShort(BaseModel):
     id: str = Field(alias='Id')
+    name: str = Field(alias='Name')
     user: Tuple[int, str] = Field(alias='User')
     remote: bool = Field(alias='Remote')
     remote_host: Optional[str] = Field(alias='RemoteHost')
-    remote_user: Optional[str] = Field(alias='RemoteUser')
     service: Optional[str] = Field(alias='Service')
     type: str = Field(alias='Type')
     class_: str = Field(alias='Class')
@@ -18,13 +18,13 @@ class LoginSessionShort(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 class LoginSessionProperties(LoginSessionShort):
-    name: str = Field(alias='Name')
     timestamp_monotonic: int = Field(alias='TimestampMonotonic')
     vtnr: int = Field(alias='VTNr')
     seat: Tuple[str, str] = Field(alias='Seat')
     tty: Optional[str] = Field(alias='TTY')
     display: Optional[str] = Field(alias='Display')
     desktop: Optional[str] = Field(alias='Desktop')
+    remote_user: Optional[str] = Field(alias='RemoteUser')
     scope: Optional[str] = Field(alias='Scope')
     leader: int = Field(alias='Leader')
     audit: int = Field(alias='Audit')
