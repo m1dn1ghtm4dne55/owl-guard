@@ -1,7 +1,7 @@
 import asyncio
-from typing import Optional
+from typing import Optional, Dict, Any
 
-from dbus_next.aio import MessageBus
+from dbus_next.aio import MessageBus, ProxyInterface
 from dbus_next import BusType
 from dbus_next.errors import DBusError
 from pydantic import ValidationError
@@ -13,9 +13,9 @@ from utils.dbus_utils import human_read_response
 
 
 class DBusConnector:
-    def __init__(self, bus_type: BusType = BusType.SYSTEM) -> None:
+    def __init__(self, bus_type: BusType = BusType.SYSTEM):
         self._bus: Optional[MessageBus] = None
-        self.bus_type = bus_type
+        self._bus_type = bus_type
         self._logger = get_logger('dev')
         self._timeout = 2.0
         self._shutdown_event = asyncio.Event()
@@ -23,7 +23,7 @@ class DBusConnector:
     async def dbus_connect(self) -> MessageBus:
         if self._bus is None:
             try:
-                self._bus = await MessageBus(bus_type=self.bus_type).connect()
+                self._bus = await MessageBus(bus_type=self._bus_type).connect()
                 self._logger.info('DBus connect')
             except DBusError as e:
                 self._logger.error(f'DBus Error connection {e}')
@@ -34,7 +34,7 @@ class DBusConnector:
         self._logger.info("Shutdown initiated")
         self._shutdown_event.set()
 
-    async def get_bus_interface(self, bus_name, _path, interface):
+    async def get_bus_interface(self, bus_name: str, _path: str, interface: str) -> ProxyInterface:
         try:
             self._logger.info(f'Get DBus Interface {_path} {interface} {bus_name}')
             dbus = await self.dbus_connect()
@@ -58,7 +58,7 @@ class LogingSessionProperties(DBusConnector):
         self._session_interface: str = 'org.freedesktop.login1.Session'
         self._http_manager = AsyncMessageSender(TOKEN, USER_ID)
 
-    async def _get_session_property(self, _id, _path):
+    async def _get_session_property(self, _id: str, _path: str) -> Dict[str, Any]:
         try:
             self._logger.info(f'Get session {_id} properties')
             interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=_path,
@@ -70,7 +70,7 @@ class LogingSessionProperties(DBusConnector):
             self._logger.error(f'Dbus Error in get session properties {e}')
             raise
 
-    async def on_session_new(self, _id, _path):
+    async def on_session_new(self, _id: str, _path: str):
         payload = await self._get_session_property(_id, _path)
         try:
             self._logger.info(f'Send info about new login session {_id} to webhook')
@@ -83,7 +83,7 @@ class LogingSessionProperties(DBusConnector):
             self._logger.error(f'Exception {e}')
             raise
 
-    async def on_session_removed(self, _id, _path):
+    async def on_session_removed(self, _id: str, _path: str):
         print(_id, _path)
         # await self._http_manager.send_message_to_user()
 
