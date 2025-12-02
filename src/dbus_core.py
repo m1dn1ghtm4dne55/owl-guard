@@ -42,12 +42,16 @@ class LogingSessionProperties(DBusConnector):
         self._properties_interface: str = 'org.freedesktop.DBus.Properties'
         self._session_interface: str = 'org.freedesktop.login1.Session'
 
-    async def on_session_new(self, _id, _path):
+    async def _get_session_property(self, _id, _path):
         interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=_path,
                                                  interface=self._properties_interface)
         session_properties = await interface.call_get_all(self._session_interface)
         session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
-        response = human_read_response(payload=LoginSessionShort(**session_properties_dict).model_dump())
+        return session_properties_dict
+
+    async def on_session_new(self, _id, _path):
+        payload = await self._get_session_property(_id, _path)
+        response = human_read_response(payload=LoginSessionShort(**payload).model_dump())
         await http_manager.send_message_to_user(response)
 
     async def on_session_removed(self, _id, _path):
