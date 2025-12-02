@@ -1,5 +1,4 @@
 from typing import Optional, Tuple
-from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
@@ -15,6 +14,8 @@ class LoginSessionShort(BaseModel):
     Active: bool
     State: str
     Timestamp: int
+
+    model_config = ConfigDict(populate_by_name=True)
 
 class LoginSessionProperties(LoginSessionShort):
     Name: str
@@ -32,5 +33,4 @@ class LoginSessionProperties(LoginSessionShort):
     IdleSinceHintMonotonic: Optional[int]
     LockedHint: bool
 
-    model_config = ConfigDict(populate_by_name=True)
 
