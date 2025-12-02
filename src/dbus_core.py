@@ -26,7 +26,7 @@ class DBusConnector:
                 self._bus = await MessageBus(bus_type=self.bus_type).connect()
                 self._logger.info('DBus connect')
             except DBusError as e:
-                self._logger.error(f'DBusError connection {e}')
+                self._logger.error(f'DBus Error connection {e}')
                 raise
         return self._bus
 
