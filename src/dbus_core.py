@@ -53,7 +53,7 @@ class DBusConnector:
 class LogingSessionProperties(DBusConnector):
     def __init__(self):
         super().__init__()
-        self.loging_bus_name: str = 'org.freedesktop.login1'
+        self._loging_bus_name: str = 'org.freedesktop.login1'
         self._properties_interface: str = 'org.freedesktop.DBus.Properties'
         self._session_interface: str = 'org.freedesktop.login1.Session'
         self._http_manager = AsyncMessageSender(TOKEN, USER_ID)
@@ -61,7 +61,7 @@ class LogingSessionProperties(DBusConnector):
     async def _get_session_property(self, _id: str, _path: str) -> Dict[str, Any]:
         try:
             self._logger.info(f'Get session {_id} properties')
-            interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=_path,
+            interface = await self.get_bus_interface(bus_name=self._loging_bus_name, _path=_path,
                                                      interface=self._properties_interface)
             session_properties = await interface.call_get_all(self._session_interface)
             session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
@@ -107,7 +107,7 @@ class LogingBusPooler(LogingSessionProperties):
     async def look_sessions(self):
         try:
             self._logger.info('Start pooling loging session')
-            interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=self._loging_path,
+            interface = await self.get_bus_interface(bus_name=self._loging_bus_name, _path=self._loging_path,
                                                      interface=self._loging_manager_interface)
             interface.on_session_new(self.on_session_new)
             interface.on_session_removed(self.on_session_removed)
