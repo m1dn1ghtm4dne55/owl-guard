@@ -1,11 +1,14 @@
 from asyncio import Future
 from os import getenv
+from typing import Optional
 
 from dbus_next.aio import MessageBus
 from dbus_next import BusType
 from dotenv import load_dotenv
 
 from async_notification_util import AsyncMessageSender
+from schemas import LoginSessionShort
+from utils import human_read_response
 
 load_dotenv()
 TOKEN = getenv('TOKEN')
@@ -16,7 +19,7 @@ http_manager = AsyncMessageSender(TOKEN, USER_ID)
 
 class DBusConnector:
     def __init__(self, bus_type: BusType = BusType.SYSTEM) -> None:
-        self._bus: MessageBus | None = None
+        self._bus: Optional[MessageBus] = None
         self.bus_type = bus_type
 
     async def dbus_connect(self) -> MessageBus:
@@ -43,9 +46,9 @@ class LogingSessionProperties(DBusConnector):
         interface = await self.get_bus_interface(bus_name=self.loging_bus_name, _path=_path,
                                                  interface=self._properties_interface)
         session_properties = await interface.call_get_all(self._session_interface)
-        for key, value in session_properties.items():
-            print(key, value, sep=' | ')
-        # await http_manager.send_message_to_user(f'Новая сессия SSH {_id}\n{_path}\nСвойства сессии: {session_properties}')
+        session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
+        response = human_read_response(payload=LoginSessionShort(**session_properties_dict).model_dump())
+        await http_manager.send_message_to_user(response)
 
     async def on_session_removed(self, _id, _path):
         print(_id, _path)
