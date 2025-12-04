@@ -71,7 +71,7 @@ class LoginSessionService:
             self._logger.info(f'Get session {session_id} properties')
             interface = self._bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path,
                                                     interface=self.DBUS_PROPERTIES_INTERFACE)
-            session_properties = await interface.call_get_all(self._session_interface)
+            session_properties = await interface.call_get_all(self.LOGIN_SESSION_INTERFACE)
             session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
             return session_properties_dict
         except DBusError as e:
@@ -122,7 +122,7 @@ class TelegramNotificationHandler(NotificationService):
 
 
 class LogingBusPooler:
-    def __init__(self, dbus: DBusConnector, session_service: LogingSessionProperties, notify_service: NotificationService):
+    def __init__(self, dbus: DBusConnector, session_service: LoginSessionService, notify_service: NotificationService):
         self.dbus = dbus
         self._logger = get_logger('dev')
         self._session = session_service
