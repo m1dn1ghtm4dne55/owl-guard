@@ -7,7 +7,7 @@ from utils.logger.log_manager import get_logger
 
 class LoginMonitor:
     def __init__(self, dbus: DBusConnector, session_service: LoginSessionService, notify_service: NotificationService):
-        self.dbus = dbus
+        self._dbus = dbus
         self._logger = get_logger('dev')
         self._session = session_service
         self._notify = notify_service
@@ -29,7 +29,7 @@ class LoginMonitor:
             self._logger.info(f'List active session {sessions}')
             await self._notify.all_active_session(sessions)
             # await self._http_manager.send_message_to_user(f'Текущие сессии: {sessions}')
-            await self.dbus.wait_for_shutdown()
+            await self._dbus.wait_for_shutdown()
         except DBusError as e:
             self._logger.error(f'DBus error in look session pooler {e}')
             raise
