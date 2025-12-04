@@ -1,0 +1,43 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+  stdout:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  webhook_json:
+    (): utils.logger.json_formatter.JSONFormatter
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: stdout
+    stream: ext://sys.stdout
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: stdout
+    filename: {LOG_FILE_PATH}
+    maxBytes: {LOG_FILE_MAX_BYTES}
+    encoding: 'utf-8'
+  web:
+    class: utils.logger.web_handler.WebhookHandler
+    level:  ERROR
+    formatter: webhook_json
+    webhook_url: {WEBHOOK_URL}
+    timeout: 5
+loggers:
+  __main__:
+    level: INFO
+    handlers: [console, file, web]
+    propagate: no
+  dev:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+  prod:
+    level: INFO
+    handlers: [console, file, web]
+    propagate: no
+root:
+  level: INFO
+  handlers: [console]
