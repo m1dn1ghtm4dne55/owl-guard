@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from notification_util import AsyncMessageSender
 from schemas import LoginSessionShort
-from utils.dbus_utils import human_read_response
+from utils.notification_utils import human_read_response
 from utils.logger.log_manager import get_logger
 
 
