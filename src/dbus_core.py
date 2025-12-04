@@ -7,7 +7,6 @@ from dbus_next import BusType
 from dbus_next.errors import DBusError
 from pydantic import ValidationError
 
-from constants import TOKEN, USER_ID
 from notification_util import AsyncMessageSender
 from schemas import LoginSessionShort
 from utils.logger.log_manager import get_logger
@@ -35,6 +34,10 @@ class DBusConnector:
     def shutdown(self):
         self._logger.info("Shutdown initiated")
         self._shutdown_event.set()
+        self._bus.disconnect()
+
+    async def wait_for_shutdown(self):
+        await self._shutdown_event.wait()
 
     async def get_bus_interface(self, bus_name: str, path: str, interface: str) -> ProxyInterface:
         try:
@@ -78,19 +81,19 @@ class LogingSessionProperties:
             self._logger.error(f'Dbus Error in get session properties {e}')
             raise
 
-    async def get_manager_interface_dbus(self):
+    async def get_manager_interface(self) -> ProxyInterface:
         return await self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=self.LOGIN_MANAGER_PATH,
                                                 interface=self.DBUS_PROPERTIES_INTERFACE)
 
 
 class NotificationService(ABC):
-    async def on_session_new(self, _id: str, _path: str):
+    async def session_new(self, payload: Dict[str, Any]):
         ...
 
-    async def on_session_removed(self, _id: str, _path: str):
+    async def session_removed(self, _id: str, _path: str):
         ...
 
-    async def active_session(self, sessions: list):
+    async def all_active_session(self, sessions: list):
         ...
 
 
@@ -99,7 +102,7 @@ class TelegramNotificationHandler(NotificationService):
         self._http_manager = AsyncMessageSender(token, user_id)
         self._logger = get_logger("dev")
 
-    async def on_session_new(self, payload: Dict[str, Any]):
+    async def session_new(self, payload: Dict[str, Any]):
         try:
             model = LoginSessionShort(**payload)
             response = human_read_response(payload=model.model_dump())
@@ -112,43 +115,40 @@ class TelegramNotificationHandler(NotificationService):
             self._logger.error(f'Exception {e}')
             raise
 
-    async def on_session_removed(self, _id: str, _path: str):
+    async def session_removed(self, _id: str, _path: str):
         self._logger.info(_id, _path)
         # await self._http_manager.send_message_to_user()
 
-    async def active_session(self, sessions: list):
+    async def all_active_session(self, sessions: list):
         self._logger.info(sessions)
         # await self._http_manager.send_message_to_user()
 
 
-class LogingBusPooler(LogingSessionProperties):
-    def __init__(self):
-        self._loging_path = '/org/freedesktop/login1'
-        self._loging_manager_interface = 'org.freedesktop.login1.Manager'
-        super().__init__()
+class LogingBusPooler:
+    def __init__(self, dbus: DBusConnector, session_service: LogingSessionProperties, notify_service: NotificationService):
+        self.dbus = dbus
+        self._logger = get_logger('dev')
+        self._session = session_service
+        self._notify = notify_service
 
-    async def _cleanup_resources(self):
-        try:
-            if self._bus:
-                self._bus.disconnect()
-                self._logger.info('DBus connection disconnected')
-        except Exception as e:
-            self._logger.error(f'Error shutdown: {e}')
-        finally:
-            self._logger.info('Shutdown completed')
+    async def _on_session_new(self, session_id: str, path: str) -> None:
+        payload = await self._session.get_session_property(session_id, path)
+        await self._notify.session_new(payload)
 
-    async def look_sessions(self):
+    async def _on_session_removed(self, session_id: str, path: str) -> None:
+        await self._notify.session_removed(session_id, path)
+
+    async def run_monitoring(self):
         try:
-            self._logger.info('Start pooling loging session')
-            interface = await self.get_bus_interface(bus_name=self._loging_bus_name, _path=self._loging_path,
-                                                     interface=self._loging_manager_interface)
-            interface.on_session_new(self.on_session_new)
-            interface.on_session_removed(self.on_session_removed)
-            sessions = await interface.call_list_sessions()
+            self._logger.info('Start monitoring loging session')
+            manager_interface = await self._session.get_manager_interface()
+            manager_interface.on_session_new(self._on_session_new)
+            manager_interface.on_session_removed(self._on_session_removed)
+            sessions = await manager_interface.call_list_sessions()
             self._logger.info(f'List active session {sessions}')
+            await self._notify.all_active_session(sessions)
             # await self._http_manager.send_message_to_user(f'Текущие сессии: {sessions}')
-            await self._shutdown_event.wait()
-            await self._cleanup_resources()
+            await self.dbus.wait_for_shutdown()
         except DBusError as e:
             self._logger.error(f'DBus error in look session pooler {e}')
             raise
