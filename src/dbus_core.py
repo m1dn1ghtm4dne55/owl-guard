@@ -6,7 +6,8 @@ from dbus_next import BusType
 from dbus_next.errors import DBusError
 from pydantic import ValidationError
 
-from async_notification_util import AsyncMessageSender, TOKEN, USER_ID
+from constants import TOKEN, USER_ID
+from notification_util import AsyncMessageSender
 from schemas import LoginSessionShort
 from utils.logger.log_manager import get_logger
 from utils.dbus_utils import human_read_response
