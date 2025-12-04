@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Dict, Any
 
 from pydantic import ValidationError
@@ -9,12 +9,15 @@ from utils.logger.log_manager import get_logger
 
 
 class NotificationService(ABC):
+    @abstractmethod
     async def session_new(self, payload: Dict[str, Any]):
         ...
 
+    @abstractmethod
     async def session_removed(self, _id: str, _path: str):
         ...
 
+    @abstractmethod
     async def all_active_session(self, sessions: list):
         ...
 
