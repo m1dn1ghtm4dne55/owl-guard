@@ -1,7 +1,7 @@
 from dbus_next import DBusError
 
-from dbus_core import DBusConnector, LoginSessionService
-from notification_service import NotificationService
+from core.dbus import DBusConnector, LoginSessionService
+from services.notification_service import NotificationService
 from utils.logger.log_manager import get_logger
 
 

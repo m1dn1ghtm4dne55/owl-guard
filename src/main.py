@@ -1,9 +1,9 @@
 from asyncio import run
 
-from constants import TOKEN, USER_ID
-from dbus_core import DBusConnector, LoginSessionService
-from login_monitor import LoginMonitor
-from notification_service import TelegramNotificationHandler
+from config.constants import TOKEN, USER_ID
+from core.dbus import DBusConnector, LoginSessionService
+from services.login_monitor import LoginMonitor
+from services.notification_service import TelegramNotificationHandler
 
 
 async def main():
