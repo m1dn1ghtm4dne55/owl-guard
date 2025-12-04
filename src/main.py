@@ -3,7 +3,7 @@ from asyncio import run
 from constants import TOKEN, USER_ID
 from dbus_core import DBusConnector, LoginSessionService
 from login_monitor import LoginMonitor
-from notification_service import NotificationService, TelegramNotificationHandler
+from notification_service import TelegramNotificationHandler
 
 
 async def main():
