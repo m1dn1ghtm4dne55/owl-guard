@@ -63,9 +63,6 @@ class LogingSessionService:
     DBUS_PROPERTIES_INTERFACE = "org.freedesktop.DBus.Properties"
 
     def __init__(self):
-        self._loging_bus_name: str = 'org.freedesktop.login1'
-        self._properties_interface: str = 'org.freedesktop.DBus.Properties'
-        self._session_interface: str = 'org.freedesktop.login1.Session'
         self.bus = DBusConnector()
         self._logger = get_logger("dev")
 
