@@ -57,7 +57,7 @@ class DBusConnector:
 
 class LoginSessionService:
     LOGIN_BUS_NAME = "org.freedesktop.login1"
-    LOGIN_MANAGER_PATH = "/org/freedesktop/login1"
+    LOGIN_PATH = "/org/freedesktop/login1"
     LOGIN_MANAGER_INTERFACE = "org.freedesktop.login1.Manager"
     LOGIN_SESSION_INTERFACE = "org.freedesktop.login1.Session"
     DBUS_PROPERTIES_INTERFACE = "org.freedesktop.DBus.Properties"
@@ -79,8 +79,8 @@ class LoginSessionService:
             raise
 
     async def get_manager_interface(self) -> ProxyInterface:
-        return await self._bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=self.LOGIN_MANAGER_PATH,
-                                                 interface=self.DBUS_PROPERTIES_INTERFACE)
+        return await self._bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=self.LOGIN_PATH,
+                                                 interface=self.LOGIN_MANAGER_INTERFACE)
 
 
 class NotificationService(ABC):
@@ -121,7 +121,7 @@ class TelegramNotificationHandler(NotificationService):
         # await self._http_manager.send_message_to_user()
 
 
-class LogingBusPooler:
+class LoginMonitor:
     def __init__(self, dbus: DBusConnector, session_service: LoginSessionService, notify_service: NotificationService):
         self.dbus = dbus
         self._logger = get_logger('dev')
