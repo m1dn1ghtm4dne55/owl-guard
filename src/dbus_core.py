@@ -35,12 +35,12 @@ class DBusConnector:
         self._logger.info("Shutdown initiated")
         self._shutdown_event.set()
 
-    async def get_bus_interface(self, bus_name: str, _path: str, interface: str) -> ProxyInterface:
+    async def get_bus_interface(self, bus_name: str, path: str, interface: str) -> ProxyInterface:
         try:
-            self._logger.info(f'Get DBus Interface {_path} {interface} {bus_name}')
+            self._logger.info(f'Get DBus Interface {path} {interface} {bus_name}')
             dbus = await self.dbus_connect()
-            session_intro = await dbus.introspect(bus_name=bus_name, path=_path, timeout=self._timeout)
-            session_object = dbus.get_proxy_object(bus_name=bus_name, path=_path, introspection=session_intro)
+            session_intro = await dbus.introspect(bus_name=bus_name, path=path, timeout=self._timeout)
+            session_object = dbus.get_proxy_object(bus_name=bus_name, path=path, introspection=session_intro)
             interface = session_object.get_interface(interface)
             return interface
         except asyncio.TimeoutError as e:
@@ -51,25 +51,34 @@ class DBusConnector:
             raise
 
 
-class LogingSessionProperties(DBusConnector):
+class LogingSessionProperties:
+    LOGIN_BUS_NAME = "org.freedesktop.login1"
+    LOGIN_MANAGER_PATH = "/org/freedesktop/login1"
+    LOGIN_MANAGER_INTERFACE = "org.freedesktop.login1.Manager"
+    LOGIN_SESSION_INTERFACE = "org.freedesktop.login1.Session"
+    DBUS_PROPERTIES_INTERFACE = "org.freedesktop.DBus.Properties"
+
     def __init__(self):
-        super().__init__()
         self._loging_bus_name: str = 'org.freedesktop.login1'
         self._properties_interface: str = 'org.freedesktop.DBus.Properties'
         self._session_interface: str = 'org.freedesktop.login1.Session'
-        self._http_manager = AsyncMessageSender(TOKEN, USER_ID)
+        self.bus = DBusConnector()
+        self._logger = get_logger("dev")
 
-    async def _get_session_property(self, _id: str, _path: str) -> Dict[str, Any]:
+    async def _get_session_property(self, session_id: str, path: str) -> Dict[str, Any]:
         try:
-            self._logger.info(f'Get session {_id} properties')
-            interface = await self.get_bus_interface(bus_name=self._loging_bus_name, _path=_path,
-                                                     interface=self._properties_interface)
+            self._logger.info(f'Get session {session_id} properties')
+            interface = self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path, interface=self.DBUS_PROPERTIES_INTERFACE)
             session_properties = await interface.call_get_all(self._session_interface)
             session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
             return session_properties_dict
         except DBusError as e:
             self._logger.error(f'Dbus Error in get session properties {e}')
             raise
+
+    async def get_manager_interface_dbus(self):
+        return await self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=self.LOGIN_MANAGER_PATH,
+                                                interface=self.DBUS_PROPERTIES_INTERFACE)
 
     async def on_session_new(self, _id: str, _path: str):
         payload = await self._get_session_property(_id, _path)
