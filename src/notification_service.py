@@ -1,0 +1,47 @@
+from abc import ABC
+from typing import Dict, Any
+
+from pydantic import ValidationError
+
+from notification_util import AsyncMessageSender
+from schemas import LoginSessionShort
+from utils.dbus_utils import human_read_response
+from utils.logger.log_manager import get_logger
+
+
+class NotificationService(ABC):
+    async def session_new(self, payload: Dict[str, Any]):
+        ...
+
+    async def session_removed(self, _id: str, _path: str):
+        ...
+
+    async def all_active_session(self, sessions: list):
+        ...
+
+
+class TelegramNotificationHandler(NotificationService):
+    def __init__(self, token: str, user_id: str):
+        self._http_manager = AsyncMessageSender(token, user_id)
+        self._logger = get_logger("dev")
+
+    async def session_new(self, payload: Dict[str, Any]):
+        try:
+            model = LoginSessionShort(**payload)
+            response = human_read_response(payload=model.model_dump())
+            self._logger.info(f'User {model.name} open session {model.id}')
+            await self._http_manager.send_message_to_user(response)
+        except ValidationError as e:
+            self._logger.error(f'Asyncio ValidationError in on new session {e}')
+            raise
+        except Exception as e:
+            self._logger.error(f'Exception {e}')
+            raise
+
+    async def session_removed(self, _id: str, _path: str):
+        self._logger.info(_id, _path)
+        # await self._http_manager.send_message_to_user()
+
+    async def all_active_session(self, sessions: list):
+        self._logger.info(sessions)
+        # await self._http_manager.send_message_to_user()
