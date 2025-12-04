@@ -62,15 +62,15 @@ class LoginSessionService:
     LOGIN_SESSION_INTERFACE = "org.freedesktop.login1.Session"
     DBUS_PROPERTIES_INTERFACE = "org.freedesktop.DBus.Properties"
 
-    def __init__(self):
-        self.bus = DBusConnector()
+    def __init__(self, dbus_core):
+        self._bus = DBusConnector()
         self._logger = get_logger("dev")
 
     async def get_session_property(self, session_id: str, path: str) -> Dict[str, Any]:
         try:
             self._logger.info(f'Get session {session_id} properties')
-            interface = self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path,
-                                                   interface=self.DBUS_PROPERTIES_INTERFACE)
+            interface = self._bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path,
+                                                    interface=self.DBUS_PROPERTIES_INTERFACE)
             session_properties = await interface.call_get_all(self._session_interface)
             session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
             return session_properties_dict
@@ -79,8 +79,8 @@ class LoginSessionService:
             raise
 
     async def get_manager_interface(self) -> ProxyInterface:
-        return await self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=self.LOGIN_MANAGER_PATH,
-                                                interface=self.DBUS_PROPERTIES_INTERFACE)
+        return await self._bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=self.LOGIN_MANAGER_PATH,
+                                                 interface=self.DBUS_PROPERTIES_INTERFACE)
 
 
 class NotificationService(ABC):
