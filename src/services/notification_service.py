@@ -38,7 +38,7 @@ class TelegramNotificationHandler(NotificationService):
             raise
 
     async def session_removed(self, _id: str, _path: str):
-        self._logger.info(_id, _path)
+        self._logger.info(f'{_id, _path}')
         # await self._http_manager.send_message_to_user()
 
     async def all_active_session(self, sessions: list):
