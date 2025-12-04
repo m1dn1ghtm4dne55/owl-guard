@@ -4,7 +4,7 @@ from logging import config, getLogger
 from functools import lru_cache
 from yaml import safe_load
 
-from utils.logger.constants import LOG_FILE_PATH, WEBHOOK_URL, LOG_FILE_MAX_BYTES, CONFIG_PATH
+from config.constants import CONFIG_PATH, LOG_FILE_PATH, WEBHOOK_URL, LOG_FILE_MAX_BYTES
 
 
 class LoggerConfiguration:
