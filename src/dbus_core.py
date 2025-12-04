@@ -1,4 +1,5 @@
 import asyncio
+from abc import ABC
 from typing import Optional, Dict, Any
 
 from dbus_next.aio import MessageBus, ProxyInterface
@@ -65,10 +66,11 @@ class LogingSessionProperties:
         self.bus = DBusConnector()
         self._logger = get_logger("dev")
 
-    async def _get_session_property(self, session_id: str, path: str) -> Dict[str, Any]:
+    async def get_session_property(self, session_id: str, path: str) -> Dict[str, Any]:
         try:
             self._logger.info(f'Get session {session_id} properties')
-            interface = self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path, interface=self.DBUS_PROPERTIES_INTERFACE)
+            interface = self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path,
+                                                   interface=self.DBUS_PROPERTIES_INTERFACE)
             session_properties = await interface.call_get_all(self._session_interface)
             session_properties_dict = {key: variant.value for key, variant in session_properties.items()}
             return session_properties_dict
@@ -80,11 +82,28 @@ class LogingSessionProperties:
         return await self.bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=self.LOGIN_MANAGER_PATH,
                                                 interface=self.DBUS_PROPERTIES_INTERFACE)
 
+
+class NotificationService(ABC):
     async def on_session_new(self, _id: str, _path: str):
-        payload = await self._get_session_property(_id, _path)
+        ...
+
+    async def on_session_removed(self, _id: str, _path: str):
+        ...
+
+    async def active_session(self, sessions: list):
+        ...
+
+
+class TelegramNotificationHandler(NotificationService):
+    def __init__(self, token: str, user_id: str) -> None:
+        self._http_manager = AsyncMessageSender(token, user_id)
+        self._logger = get_logger("dev")
+
+    async def on_session_new(self, payload: Dict[str, Any]):
         try:
-            self._logger.info(f'Send info about new login session {_id} to webhook')
-            response = human_read_response(payload=LoginSessionShort(**payload).model_dump())
+            model = LoginSessionShort(**payload)
+            response = human_read_response(payload=model.model_dump())
+            self._logger.info(f'User {model.name} open session {model.id}')
             await self._http_manager.send_message_to_user(response)
         except ValidationError as e:
             self._logger.error(f'Asyncio ValidationError in on new session {e}')
@@ -94,7 +113,11 @@ class LogingSessionProperties:
             raise
 
     async def on_session_removed(self, _id: str, _path: str):
-        print(_id, _path)
+        self._logger.info(_id, _path)
+        # await self._http_manager.send_message_to_user()
+
+    async def active_session(self, sessions: list):
+        self._logger.info(sessions)
         # await self._http_manager.send_message_to_user()
 
 
@@ -123,7 +146,6 @@ class LogingBusPooler(LogingSessionProperties):
             interface.on_session_removed(self.on_session_removed)
             sessions = await interface.call_list_sessions()
             self._logger.info(f'List active session {sessions}')
-            print(sessions)
             # await self._http_manager.send_message_to_user(f'Текущие сессии: {sessions}')
             await self._shutdown_event.wait()
             await self._cleanup_resources()
