@@ -55,7 +55,7 @@ class DBusConnector:
             raise
 
 
-class LogingSessionService:
+class LoginSessionService:
     LOGIN_BUS_NAME = "org.freedesktop.login1"
     LOGIN_MANAGER_PATH = "/org/freedesktop/login1"
     LOGIN_MANAGER_INTERFACE = "org.freedesktop.login1.Manager"
