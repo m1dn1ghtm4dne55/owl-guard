@@ -3,9 +3,8 @@ from typing import Dict, Any
 
 from pydantic import ValidationError
 
-from utils.notification_util import AsyncMessageSender
+from utils.notification_utils import AsyncMessageSender, human_read_response
 from models.schemas import LoginSessionShort
-from utils.notification_utils import human_read_response
 from utils.logger.log_manager import get_logger
 
 

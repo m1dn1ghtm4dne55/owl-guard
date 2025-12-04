@@ -2,7 +2,7 @@ from aiohttp import ClientResponseError
 from aioresponses import aioresponses
 import pytest
 
-from utils.notification_util import AsyncMessageSender
+from utils.notification_utils import AsyncMessageSender
 
 
 @pytest.mark.asyncio
