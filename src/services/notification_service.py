@@ -18,7 +18,7 @@ class NotificationService(ABC):
         ...
 
     @abstractmethod
-    async def all_active_session(self, sessions: list):
+    async def all_active_session(self, payload: Dict[str, Any]):
         ...
 
 
@@ -44,6 +44,15 @@ class TelegramNotificationHandler(NotificationService):
         self._logger.info(f'{_id, _path}')
         # await self._http_manager.send_message_to_user()
 
-    async def all_active_session(self, sessions: list):
-        self._logger.info(sessions)
-        # await self._http_manager.send_message_to_user()
+    async def all_active_session(self, payload: Dict[str, Any]):
+        try:
+            model = LoginSessionShort(**payload)
+            response = human_read_response(payload=model.model_dump())
+            self._logger.info(f'User {model.name} open session {model.id}')
+            await self._http_manager.send_message_to_user(response)
+        except ValidationError as e:
+            self._logger.error(f'Asyncio ValidationError in on new session {e}')
+            raise
+        except Exception as e:
+            self._logger.error(f'Exception {e}')
+            raise

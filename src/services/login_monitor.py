@@ -23,12 +23,13 @@ class LoginMonitor:
         try:
             self._logger.info('Start monitoring loging session')
             manager_interface = await self._session.get_manager_interface()
-            manager_interface.on_session_new(self._on_session_new)
-            manager_interface.on_session_removed(self._on_session_removed)
             sessions = await manager_interface.call_list_sessions()
             self._logger.info(f'List active session {sessions}')
-            await self._notify.all_active_session(sessions)
-            # await self._http_manager.send_message_to_user(f'Текущие сессии: {sessions}')
+            for sess in sessions:
+                payload = await self._session.get_session_property(session_id=sess[0], path=sess[-1])
+                await self._notify.all_active_session(payload)
+            manager_interface.on_session_new(self._on_session_new)
+            manager_interface.on_session_removed(self._on_session_removed)
             await self._dbus.wait_for_shutdown()
         except DBusError as e:
             self._logger.error(f'DBus error in look session pooler {e}')
