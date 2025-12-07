@@ -36,7 +36,7 @@ class DBusConnector:
 
     async def get_bus_interface(self, bus_name: str, path: str, interface: str) -> ProxyInterface:
         try:
-            self._logger.info(f'Get DBus Interface {path} {interface} {bus_name}')
+            self._logger.debug(f'Get DBus Interface {path} {interface} {bus_name}')
             dbus = await self.dbus_connect()
             session_intro = await dbus.introspect(bus_name=bus_name, path=path, timeout=self._timeout)
             session_object = dbus.get_proxy_object(bus_name=bus_name, path=path, introspection=session_intro)
@@ -63,7 +63,7 @@ class LoginSessionService:
 
     async def get_session_property(self, session_id: str, path: str) -> Dict[str, Any]:
         try:
-            self._logger.info(f'Get session {session_id} properties')
+            self._logger.debug(f'Get session {session_id} properties')
             interface = await self._bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path,
                                                     interface=self.DBUS_PROPERTIES_INTERFACE)
             session_properties = await interface.call_get_all(self.LOGIN_SESSION_INTERFACE)

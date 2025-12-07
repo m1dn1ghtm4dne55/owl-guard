@@ -30,14 +30,14 @@ class LoginMonitor:
             payload = await self._session.get_session_property(session_id=sess[0], path=sess[-1])
             self._cache.session_add(sess[0], payload)
         all_session = self._cache.all_session_get_info()
-        self._logger.info(f'all_sessions {all_session}')
+        self._logger.debug(f'all_sessions {all_session}')
 
     async def run_monitoring(self):
         try:
             self._logger.info('Start monitoring loging session')
             manager_interface = await self._session.get_manager_interface()
             sessions = await manager_interface.call_list_sessions()
-            self._logger.info(f'List active session')
+            self._logger.debug(f'List active session')
             await self._sessions_info(sessions)
             manager_interface.on_session_new(self._on_session_new)
             manager_interface.on_session_removed(self._on_session_removed)
