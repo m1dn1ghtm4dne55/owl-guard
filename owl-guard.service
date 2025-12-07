@@ -1,0 +1,18 @@
+[Unit]
+Description=SSH Owl Service
+After=network.target dbus.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/owl-guard
+ExecStart=/usr/bin/python3 /opt/owl-guard/main.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ssh-owl
+
+[Install]
+WantedBy=multi-user.target
