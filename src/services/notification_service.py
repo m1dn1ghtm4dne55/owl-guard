@@ -1,6 +1,8 @@
+import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
+from aiohttp import ClientResponseError
 from pydantic import ValidationError
 
 from utils.notification_utils import AsyncMessageSender, human_read_response
@@ -14,7 +16,11 @@ class NotificationService(ABC):
         ...
 
     @abstractmethod
-    async def session_removed(self, _id: str, _path: str):
+    async def _short_payload_getter(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        ...
+
+    @abstractmethod
+    async def session_terminate(self, payload: Dict[str, Any]):
         ...
 
     @abstractmethod
@@ -27,32 +33,41 @@ class TelegramNotificationHandler(NotificationService):
         self._http_manager = AsyncMessageSender(token, user_id)
         self._logger = get_logger("dev")
 
+    async def _short_payload_getter(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            payload = LoginSessionShort(**payload)
+            return payload.model_dump()
+        except ValidationError as e:
+            self._logger.error(f'Asyncio ValidationError in payload_getter {e}')
+            raise
+        except Exception as e:
+            self._logger.error(f'Exception {e}')
+            raise
+
     async def session_new(self, payload: Dict[str, Any]):
         try:
-            model = LoginSessionShort(**payload)
-            response = human_read_response(payload=model.model_dump())
-            self._logger.info(f'User {model.name} open session {model.id}')
-            await self._http_manager.send_message_to_user(response)
-        except ValidationError as e:
-            self._logger.error(f'Asyncio ValidationError in on new session {e}')
-            raise
+            short_payload = await self._short_payload_getter(payload=payload)
+            body = human_read_response(payload=short_payload)
+            self._logger.info('User {} open session {}'.format(short_payload.get('name'), short_payload.get('id')))
+            await self._http_manager.send_message_to_user(body)
+        except ClientResponseError as e:
+            logging.error(f'Error send message to Telegram in session new {e}')
         except Exception as e:
             self._logger.error(f'Exception {e}')
             raise
 
-    async def session_removed(self, _id: str, _path: str):
-        self._logger.info(f'{_id, _path}')
-        # await self._http_manager.send_message_to_user()
+
+    async def session_terminate(self, payload: Dict[str, Any]):
+        try:
+            short_payload = await self._short_payload_getter(payload=payload)
+            body = human_read_response(payload=short_payload)
+            self._logger.info('User {} terminate session {}'.format(short_payload.get('name'), short_payload.get('id')))
+            await self._http_manager.send_message_to_user(body)
+        except ClientResponseError as e:
+            logging.error(f'Error send message to Telegram in session terminate {e}')
+        except Exception as e:
+            self._logger.error(f'Exception {e}')
+            raise
 
     async def all_active_session(self, payload: Dict[str, Any]):
-        try:
-            model = LoginSessionShort(**payload)
-            response = human_read_response(payload=model.model_dump())
-            self._logger.info(f'User {model.name} open session {model.id}')
-            await self._http_manager.send_message_to_user(response)
-        except ValidationError as e:
-            self._logger.error(f'Asyncio ValidationError in on new session {e}')
-            raise
-        except Exception as e:
-            self._logger.error(f'Exception {e}')
-            raise
+        ...
