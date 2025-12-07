@@ -48,7 +48,7 @@ class TelegramNotificationHandler(NotificationService):
         try:
             short_payload = await self._short_payload_getter(payload=payload)
             body = human_read_response(payload=short_payload)
-            self._logger.debug('User {} open session {}'.format(short_payload.get('name'), short_payload.get('id')))
+            self._logger.info('User {} open session {}'.format(short_payload.get('name'), short_payload.get('id')))
             await self._http_manager.send_message_to_user(body)
         except ClientResponseError as e:
             logging.error(f'Error send message to Telegram in session new {e}')
@@ -61,7 +61,7 @@ class TelegramNotificationHandler(NotificationService):
         try:
             short_payload = await self._short_payload_getter(payload=payload)
             body = human_read_response(payload=short_payload)
-            self._logger.debug('User {} terminate session {}'.format(short_payload.get('name'), short_payload.get('id')))
+            self._logger.info('User {} terminate session {}'.format(short_payload.get('name'), short_payload.get('id')))
             await self._http_manager.send_message_to_user(body)
         except ClientResponseError as e:
             logging.error(f'Error send message to Telegram in session terminate {e}')

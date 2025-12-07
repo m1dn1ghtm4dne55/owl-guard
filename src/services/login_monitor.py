@@ -30,7 +30,7 @@ class LoginMonitor:
             payload = await self._session.get_session_property(session_id=sess[0], path=sess[-1])
             self._cache.session_add(sess[0], payload)
         all_session = self._cache.all_session_get_info()
-        self._logger.debug(f'all_sessions {all_session}')
+        self._logger.info(f'all_sessions {all_session}')
 
     async def run_monitoring(self):
         try:
