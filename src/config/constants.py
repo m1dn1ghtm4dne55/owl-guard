@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = getenv('TOKEN')
-USER_ID = getenv('USER_ID')
+TELEGRAM_BOT_TOKEN = getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_USER_ID = getenv('TELEGRAM_USER_ID')
 
 CONFIG_PATH = path.join(path.dirname(__file__), 'logging.yaml')
 LOG_FILE_PATH = environ.get('LOG_FILE_PATH', 'utils/logger/bot.log')

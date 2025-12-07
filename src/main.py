@@ -1,6 +1,6 @@
 from asyncio import run
 
-from config.constants import TOKEN, USER_ID
+from config.constants import TELEGRAM_BOT_TOKEN, TELEGRAM_USER_ID
 from core.dbus import DBusConnector, LoginSessionService
 from services.login_monitor import LoginMonitor
 from services.notification_service import TelegramNotificationHandler
@@ -9,7 +9,7 @@ from services.notification_service import TelegramNotificationHandler
 async def main():
     dbus = DBusConnector()
     session_service = LoginSessionService(dbus)
-    telegram_notification = TelegramNotificationHandler(TOKEN, USER_ID)
+    telegram_notification = TelegramNotificationHandler(TELEGRAM_BOT_TOKEN, TELEGRAM_USER_ID)
     monitor = LoginMonitor(dbus, session_service, telegram_notification)
 
     await monitor.run_monitoring()
