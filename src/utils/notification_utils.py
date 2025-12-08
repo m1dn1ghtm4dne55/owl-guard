@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from inspect import stack
 
@@ -10,9 +11,8 @@ class AsyncMessageSender:
         self._token = token
 
     async def send_message_to_user(self, message):
-        connector = TCPConnector(ssl=False)
         body = {"chat_id": self._user_id, "text": message}
-        async with ClientSession(connector=connector) as session:
+        async with ClientSession() as session:
             response = await session.post(url=f'{self._url}{self._token}/sendMessage', data=body)
             response.raise_for_status()
             data = await response.json()
