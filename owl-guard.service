@@ -1,5 +1,5 @@
 [Unit]
-Description=SSH Owl Service
+Description=Login Monitoring Service
 After=network.target dbus.service
 
 [Service]
