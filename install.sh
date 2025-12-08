@@ -11,7 +11,7 @@ fi
 wget -q "$REPO_URL" -O /tmp/logger.zip
 unzip -q -o /tmp/logger.zip -d  "$SERVICE_PATH"
 rm /tmp/logger.zip
-touch /opt/owl-guard-service/.env
+touch "$ENV_PATH"
 
 
 read -rp "TELEGRAM_BOT_TOKEN: " TELEGRAM_BOT_TOKEN || true
