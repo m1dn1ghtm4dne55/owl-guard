@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 REPO_URL=https://github.com/m1dn1ghtm4dne55/owl-guard/archive/refs/heads/master.zip
 SERVICE_PATH=/opt/owl-guard
 VENV_PATH="$SERVICE_PATH/venv"
@@ -15,12 +14,15 @@ if ! wget  "$REPO_URL" -O /tmp/logger.zip; then
   exit
 fi
 
+apt update
+apt install -y unzip
+
 unzip -q -o /tmp/logger.zip -d  "$SERVICE_PATH"
-mv /opt/owl-guard2/owl-guard-master/* /opt/owl-guard2/
-rmdir "$SERVICE_PATH"/owl-guard-master
+mv /opt/owl-guard/owl-guard-master/* /opt/owl-guard/
 rm /tmp/logger.zip
 touch "$ENV_PATH"
-
+mkdir $SERVICE_PATH/utils && mkdir $SERVICE_PATH/utils/logger
+touch $SERVICE_PATH/utils/logger/owl-guard.log
 
 read -rp "Enter you telegram bot token here: " TELEGRAM_BOT_TOKEN || true
 if [ -n "${TELEGRAM_BOT_TOKEN}" ]; then
