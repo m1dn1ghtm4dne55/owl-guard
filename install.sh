@@ -9,7 +9,7 @@ if [ "$(whoami)" != "root" ]; then
 fi
 
 echo "Start getting file fron repository"
-if ! wget  "$REPO_URL" -O /tmp/logger.zip; then
+if ! wget  "$REPO_URL" -O /tmp/owlguard.zip; then
   echo "No file on repository"
   exit
 fi
@@ -17,9 +17,9 @@ fi
 apt update
 apt install -y unzip
 
-unzip -q -o /tmp/logger.zip -d  "$SERVICE_PATH"
+unzip -q -o /tmp/owlguard.zip -d  "$SERVICE_PATH"
 mv /opt/owl-guard/owl-guard-master/* /opt/owl-guard/
-rm /tmp/logger.zip
+rm /tmp/owlguard.zip
 touch "$ENV_PATH"
 touch /var/log/owl-guard.log
 rm -rf "$SERVICE_PATH"/tests
