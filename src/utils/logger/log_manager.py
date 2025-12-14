@@ -39,6 +39,6 @@ class LoggerManager:
 
 
 @lru_cache(maxsize=128)
-def get_logger(logger_name: str = None) -> LoggerManager:
+def get_logger(logger_name: str = 'prod') -> LoggerManager:
     LoggerConfiguration.logging_setup(CONFIG_PATH)
     return LoggerManager(logger_name)
