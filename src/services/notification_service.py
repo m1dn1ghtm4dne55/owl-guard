@@ -31,7 +31,7 @@ class NotificationService(ABC):
 class TelegramNotificationHandler(NotificationService):
     def __init__(self, token: str, user_id: str):
         self._http_manager = AsyncMessageSender(token, user_id)
-        self._logger = get_logger("dev")
+        self._logger = get_logger()
 
     async def _short_payload_getter(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         try:

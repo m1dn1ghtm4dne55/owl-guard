@@ -9,7 +9,7 @@ from services.cache_session_service import SessionCacheService
 class LoginMonitor:
     def __init__(self, dbus: DBusConnector, session_service: LoginSessionService, notify_service: NotificationService):
         self._dbus = dbus
-        self._logger = get_logger('dev')
+        self._logger = get_logger()
         self._session = session_service
         self._notify = notify_service
         self._cache = SessionCacheService()

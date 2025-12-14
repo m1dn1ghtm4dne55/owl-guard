@@ -28,7 +28,7 @@ handlers:
 loggers:
   __main__:
     level: INFO
-    handlers: [console, file, web]
+    handlers: [console, file]
     propagate: no
   dev:
     level: DEBUG

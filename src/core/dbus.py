@@ -12,7 +12,7 @@ class DBusConnector:
     def __init__(self, bus_type: BusType = BusType.SYSTEM):
         self._bus: Optional[MessageBus] = None
         self._bus_type = bus_type
-        self._logger = get_logger('dev')
+        self._logger = get_logger()
         self._timeout = 2.0
         self._shutdown_event = asyncio.Event()
 
@@ -59,7 +59,7 @@ class LoginSessionService:
 
     def __init__(self, dbus_core: DBusConnector):
         self._bus = dbus_core
-        self._logger = get_logger("dev")
+        self._logger = get_logger()
 
     async def get_session_property(self, session_id: str, path: str) -> Dict[str, Any]:
         try:

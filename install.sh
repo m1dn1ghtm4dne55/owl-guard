@@ -21,8 +21,7 @@ unzip -q -o /tmp/logger.zip -d  "$SERVICE_PATH"
 mv /opt/owl-guard/owl-guard-master/* /opt/owl-guard/
 rm /tmp/logger.zip
 touch "$ENV_PATH"
-mkdir $SERVICE_PATH/utils && mkdir $SERVICE_PATH/utils/logger
-touch $SERVICE_PATH/utils/logger/owl-guard.log
+touch /var/log/owl-guard.log
 
 read -rp "Enter you telegram bot token here: " TELEGRAM_BOT_TOKEN || true
 if [ -n "${TELEGRAM_BOT_TOKEN}" ]; then

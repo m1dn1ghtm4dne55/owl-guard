@@ -6,7 +6,7 @@ from utils.logger.log_manager import get_logger
 
 class SessionCacheService:
     def __init__(self):
-        self._logger = get_logger("dev")
+        self._logger = get_logger()
         self._data: Dict[str, Dict[str, Any]] = {}
 
     def session_add(self, session_id: str, session_data: Dict[str, Any]):
