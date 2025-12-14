@@ -22,6 +22,9 @@ mv /opt/owl-guard/owl-guard-master/* /opt/owl-guard/
 rm /tmp/logger.zip
 touch "$ENV_PATH"
 touch /var/log/owl-guard.log
+rm -rf "$SERVICE_PATH"/tests
+rm -rf "$SERVICE_PATH"/owl-guard-master/
+rm -f "$SERVICE_PATH"/{poetry.lock,pyproject.toml,pytest.ini}
 
 read -rp "Enter you telegram bot token here: " TELEGRAM_BOT_TOKEN || true
 if [ -n "${TELEGRAM_BOT_TOKEN}" ]; then
