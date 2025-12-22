@@ -13,7 +13,7 @@ detect_pcg_manager() {
     elif command -v zypper >/dev/null 2>&1; then
         PKG_MGR="zypper"
     else
-        echo "Unsupported Linux distibution no package manager found"
+        echo "Unsupported Linux distribution no package manager found"
         exit 1
     fi
 }
