@@ -3,19 +3,39 @@ SERVICE_PATH=/opt/owl-guard
 VENV_PATH="$SERVICE_PATH/venv"
 ENV_PATH="$SERVICE_PATH/src/.env"
 
+detect_pcg_manager() {
+    if command -v dnf >/dev/null 2>&1; then
+        PKG_MGR="dnf"
+    elif command -v apt >/dev/null 2>&1; then
+        PKG_MGR="apt"
+    elif command -v yum >/dev/null 2>&1; then
+        PKG_MGR="yum"
+    elif command -v zypper >/dev/null 2>&1; then
+        PKG_MGR="zypper"
+    else
+        echo "Unsupported Linux distibution no package manager found"
+        exit 1
+    fi
+}
+
+
+
 if [ "$(whoami)" != "root" ]; then
         echo "Please start me from root"
-        exit
+        exit 1
 fi
 
-echo "Start getting file fron repository"
+detect_pcg_manager
+
+echo "Start getting file from repository"
 if ! wget  "$REPO_URL" -O /tmp/owlguard.zip; then
   echo "No file on repository"
-  exit
+  exit 1
 fi
 
-apt update
-apt install -y unzip
+
+$PKG_MGR update
+$PKG_MGR install -y unzip
 
 unzip -q -o /tmp/owlguard.zip -d  "$SERVICE_PATH"
 mv /opt/owl-guard/owl-guard-master/* /opt/owl-guard/
