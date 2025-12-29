@@ -37,7 +37,7 @@ class EnvService:
         self.write_env(new_data=lines)
         return lines
 
-    def get_env_keys(self):
+    def get_env_keys(self) -> list[str]:
         lines = self.read_env()
         keys = [line.split('=')[0] for line in lines]
         return keys
