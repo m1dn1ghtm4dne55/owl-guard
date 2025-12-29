@@ -15,7 +15,7 @@ def cli():
     sub_parser = parser.add_subparsers(required=True, dest="command")
     for cmd in ("get", "set"):
         cmd_line_parser = sub_parser.add_parser(cmd, help=f"{cmd} env value")
-        cmd_line_parser.add_argument("key", help="TELEGRAM_BOT_TOKEN or TELEGRAM_USER_ID")
+        cmd_line_parser.add_argument("key", help=f"{env_service.get_env_keys()}")
         if cmd == "set":
             cmd_line_parser.add_argument("value", help="New value")
         cmd_line_parser.set_defaults(func=handle_env)
