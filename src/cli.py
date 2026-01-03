@@ -11,7 +11,7 @@ def handle_env(args: Namespace):
             env_service.set_env_value(key=args.key, line=args.value)
             print('To make changes you need to restart the owl-guard.service')
     else:
-        print(f'Invalid argument, please use array arguments -> {env_service.get_env_keys()}')
+        print(f'Invalid argument, use arguments from array -> {env_service.get_env_keys()}')
 
 
 def cli():
