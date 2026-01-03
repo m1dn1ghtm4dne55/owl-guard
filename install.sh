@@ -1,4 +1,4 @@
-BRANCH="cli"
+BRANCH="master"
 REPO_URL=https://github.com/m1dn1ghtm4dne55/owl-guard/archive/refs/heads/${BRANCH}.zip
 SERVICE_PATH=/opt/owl-guard
 VENV_PATH="$SERVICE_PATH/venv"
