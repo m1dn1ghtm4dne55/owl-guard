@@ -20,7 +20,7 @@ def cli():
     sub_parser = parser.add_subparsers(required=True, dest="command")
     for cmd in ("get", "set"):
         cmd_line_parser = sub_parser.add_parser(cmd, help=f"{cmd} env value")
-        cmd_line_parser.add_argument("key", help=f"{env_service.get_env_keys()}")
+        cmd_line_parser.add_argument("key", help=f"{[value.lower() for value in env_service.get_env_keys()]}")
         if cmd == "set":
             cmd_line_parser.add_argument("value", help="For LOG_FILE_MAX_BYTE and TELEGRAM_USER_ID value mast be integer")
         cmd_line_parser.set_defaults(func=handle_env)
