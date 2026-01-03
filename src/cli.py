@@ -5,7 +5,6 @@ from services.env_service import env_service
 
 def handle_env(args: Namespace):
     key = args.key.upper()
-    print(key)
     if key in env_service.get_env_keys():
         if args.command == "get":
             print(env_service.get_env_value(key=key))
@@ -13,7 +12,7 @@ def handle_env(args: Namespace):
             env_service.set_env_value(key=key, line=args.value)
             print('To make changes you need to restart the owl-guard.service')
     else:
-        print(f'Invalid argument, please use arguments from array -> {env_service.get_env_keys()}')
+        print(f'Invalid argument, please use arguments from array -> {[value.lower() for value in env_service.get_env_keys()]}')
 
 
 def cli():
