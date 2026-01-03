@@ -43,9 +43,10 @@ unzip -q -o /tmp/owlguard.zip -d  "$SERVICE_PATH"
 mv /opt/owl-guard/owl-guard-${BRANCH}/* /opt/owl-guard/
 rm /tmp/owlguard.zip
 cat >>"$ENV_PATH" <<'EOF'
-LOG_FILE_MAX_BYTES='524288000'
 WEBHOOK_URL=''
+LOG_FILE_MAX_BYTES='524288000'
 LOG_FILE_PATH='/var/log/owl-guard.log'
+DBUS_CORE_SESSION_TIMEOUT='2.0'
 EOF
 touch /var/log/owl-guard.log
 rm -rf "$SERVICE_PATH"/tests
