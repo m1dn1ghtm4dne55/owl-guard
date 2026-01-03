@@ -42,4 +42,4 @@ class EnvService:
         keys = [line.split('=')[0] for line in lines]
         return keys
 
-env_service = EnvService('services/.env')
+env_service = EnvService('.env')
