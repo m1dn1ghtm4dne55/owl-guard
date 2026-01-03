@@ -8,6 +8,7 @@ def handle_env(args: Namespace):
         print(env_service.get_env_value(key=args.key))
     elif args.command == "set":
         env_service.set_env_value(key=args.key, line=args.value)
+        print('To make changes you need to restart the owl-guard.service service')
 
 
 def cli():
