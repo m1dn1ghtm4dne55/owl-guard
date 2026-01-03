@@ -74,7 +74,11 @@ if [ -f "$SERVICE_PATH/requirements.txt" ]; then
     pip install -r "$SERVICE_PATH/requirements.txt"
 fi
 
-alias owl-guard="python3 /opt/owl-guard/src/cli.py"
+cat > /usr/local/bin/owl-guard <<'EOF'
+#!/bin/bash
+cd /opt/owl-guard/src && exec python3 /opt/owl-guard/src/cli.py "$@"
+EOF
+chmod +x /usr/local/bin/owl-guard
 
 systemctl daemon-reload
 echo "systemd reload"
