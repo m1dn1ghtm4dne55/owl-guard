@@ -32,7 +32,7 @@ class CLIValidator:
     def _validate_telegram_bot_token(args_value) -> str:
         if CLIValidator.TELEGRAM_TOKEN_PATTERN.match(args_value):
             return args_value
-        raise ValueError('invalid telegram bot token')
+        raise ValueError('invalid')
 
     def _get_validator(self, key: str):
         if key in self.INTEGER_KEYS:
@@ -57,7 +57,7 @@ class CLIValidator:
             self._get_validator(args_key)(args_value)
             return True
         except ValueError as e:
-            print(f'{args_key} {e}')
+            print(f'{args_key.lower()} {e}')
             return False
 
 
