@@ -8,6 +8,11 @@ class CLIValidator:
     INTEGER_KEYS = {'LOG_FILE_MAX_BYTES', 'TELEGRAM_USER_ID'}
     FLOAT_KEYS = {'DBUS_CORE_SESSION_TIMEOUT'}
     TELEGRAM_TOKEN_KEY = {'TELEGRAM_BOT_TOKEN'}
+    URL_KEYS = {'WEBHOOK_URL'}
+
+    URL_PATTERN = compile(
+        r'^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:/[a-zA-Z0-9()@:%_\+.~#?&/=~-]*)?$'
+    )
     TELEGRAM_TOKEN_PATTERN = compile(r'^[0-9]{8,10}:[A-Za-z0-9_-]{35}$')
 
     def __init__(self, args: Namespace):
@@ -15,13 +20,13 @@ class CLIValidator:
         self.args = args
 
     @staticmethod
-    def _validate_key_isdigit(args_value) -> str:
+    def _validate_key_isdigit(args_value: str) -> str:
         if args_value.isdigit():
             return args_value
         raise ValueError('must be integer')
 
     @staticmethod
-    def _validate_key_float(args_value) -> str:
+    def _validate_key_float(args_value: str) -> str:
         try:
             value = float(args_value)
             return str(value)
@@ -29,10 +34,16 @@ class CLIValidator:
             raise ValueError('must be float or integer')
 
     @staticmethod
-    def _validate_telegram_bot_token(args_value) -> str:
+    def _validate_telegram_bot_token(args_value: str) -> str:
         if CLIValidator.TELEGRAM_TOKEN_PATTERN.match(args_value):
             return args_value
         raise ValueError('invalid')
+
+    @staticmethod
+    def _validate_url(args_value: str) -> str:
+        if not CLIValidator.URL_PATTERN.match(args_value):
+            raise ValueError('must be valid https URL')
+        return args_value
 
     def _get_validator(self, key: str):
         if key in self.INTEGER_KEYS:
@@ -41,6 +52,8 @@ class CLIValidator:
             return self._validate_telegram_bot_token
         if key in self.FLOAT_KEYS:
             return self._validate_key_float
+        if key in self.URL_KEYS:
+            return self._validate_url
         raise ValueError('unknown key type')
 
     @property
