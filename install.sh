@@ -27,6 +27,16 @@ if [ "$(whoami)" != "root" ]; then
         exit 1
 fi
 
+PY_VERSION=$(python3 -V 2>&1 | awk '{print $2}')
+PY_MAJOR=${PY_VERSION%%.*}
+PY_MINOR=${PY_VERSION#*.}
+PY_MINOR=${PY_MINOR%%.*}
+
+if [ "$PY_MAJOR" -lt 3 ] || { [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 8 ]; }; then
+  echo "Please update python version to 3.8+ (found $PY_VERSION)"
+  exit 1
+fi
+
 detect_pcg_manager
 
 echo "Start getting file from repository"
