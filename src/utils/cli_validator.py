@@ -4,7 +4,7 @@ from re import compile
 from services.env_service import env_service
 
 
-class CliValidator:
+class CLIValidator:
     INTEGER_KEYS = {'LOG_FILE_MAX_BYTES', 'TELEGRAM_USER_ID'}
     FLOAT_KEYS = {'DBUS_CORE_SESSION_TIMEOUT'}
     TELEGRAM_TOKEN_KEY = {'TELEGRAM_BOT_TOKEN'}
@@ -30,7 +30,7 @@ class CliValidator:
 
     @staticmethod
     def _validate_telegram_bot_token(args_value) -> str:
-        if CliValidator.TELEGRAM_TOKEN_PATTERN.match(args_value):
+        if CLIValidator.TELEGRAM_TOKEN_PATTERN.match(args_value):
             return args_value
         raise ValueError('invalid telegram bot token')
 

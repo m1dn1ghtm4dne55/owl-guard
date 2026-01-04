@@ -1,12 +1,12 @@
 from argparse import ArgumentParser, Namespace
 
 from services.env_service import env_service
-from utils.cli_validator import CliValidator
+from utils.cli_validator import CLIValidator
 
 
 def handle_env(args: Namespace):
     key = args.key.upper()
-    cli_validator = CliValidator(args)
+    cli_validator = CLIValidator(args)
     value = cli_validator.validate
     if value:
         if args.command == "get":
