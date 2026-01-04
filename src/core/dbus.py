@@ -5,6 +5,7 @@ from dbus_next.aio import MessageBus, ProxyInterface
 from dbus_next import BusType
 from dbus_next.errors import DBusError
 
+from config.constants import DBUS_CORE_SESSION_TIMEOUT
 from utils.logger.log_manager import get_logger
 
 
@@ -13,7 +14,7 @@ class DBusConnector:
         self._bus: Optional[MessageBus] = None
         self._bus_type = bus_type
         self._logger = get_logger()
-        self._timeout = 2.0
+        self._timeout = DBUS_CORE_SESSION_TIMEOUT
         self._shutdown_event = asyncio.Event()
 
     async def dbus_connect(self) -> MessageBus:

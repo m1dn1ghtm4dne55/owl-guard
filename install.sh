@@ -1,7 +1,9 @@
-REPO_URL=https://github.com/m1dn1ghtm4dne55/owl-guard/archive/refs/heads/master.zip
+BRANCH="master"
+REPO_URL=https://github.com/m1dn1ghtm4dne55/owl-guard/archive/refs/heads/${BRANCH}.zip
 SERVICE_PATH=/opt/owl-guard
 VENV_PATH="$SERVICE_PATH/venv"
 ENV_PATH="$SERVICE_PATH/src/.env"
+
 
 detect_pcg_manager() {
     if command -v dnf >/dev/null 2>&1; then
@@ -38,12 +40,17 @@ $PKG_MGR update
 $PKG_MGR install -y unzip
 
 unzip -q -o /tmp/owlguard.zip -d  "$SERVICE_PATH"
-mv /opt/owl-guard/owl-guard-master/* /opt/owl-guard/
+mv /opt/owl-guard/owl-guard-${BRANCH}/* /opt/owl-guard/
 rm /tmp/owlguard.zip
-touch "$ENV_PATH"
+cat >>"$ENV_PATH" <<'EOF'
+WEBHOOK_URL=''
+LOG_FILE_MAX_BYTES='524288000'
+LOG_FILE_PATH='/var/log/owl-guard.log'
+DBUS_CORE_SESSION_TIMEOUT='2.0'
+EOF
 touch /var/log/owl-guard.log
 rm -rf "$SERVICE_PATH"/tests
-rm -rf "$SERVICE_PATH"/owl-guard-master/
+rm -rf "$SERVICE_PATH"/owl-guard-${BRANCH}/
 rm -f "$SERVICE_PATH"/{poetry.lock,pyproject.toml,pytest.ini}
 
 read -rp "Enter you telegram bot token here: " TELEGRAM_BOT_TOKEN || true
@@ -67,6 +74,12 @@ if [ -f "$SERVICE_PATH/requirements.txt" ]; then
     pip install --upgrade pip
     pip install -r "$SERVICE_PATH/requirements.txt"
 fi
+
+cat > /usr/local/bin/owl-guard <<'EOF'
+#!/bin/bash
+cd /opt/owl-guard/src && exec python3 /opt/owl-guard/src/cli.py "$@"
+EOF
+chmod +x /usr/local/bin/owl-guard
 
 systemctl daemon-reload
 echo "systemd reload"

@@ -1,6 +1,7 @@
 # Owl-Guard
 
-Owl-Guard is a system login monitoring service for Linux servers. The tool captures authentication events and logins from system journals, sends notifications via Telegram bot. The project is under development.
+Owl-Guard is a system login monitoring service for Linux servers. The tool captures authentication events and logins
+from system journals, sends notifications via Telegram bot. The project is under development.
 
 ## Features
 
@@ -8,7 +9,6 @@ Owl-Guard is a system login monitoring service for Linux servers. The tool captu
 - Logging user login events
 - Telegram notifications
 - Log storage for analysis
-
 
 ## Installation
 
@@ -26,16 +26,35 @@ The script sets up the service, dependencies, and prompts for Telegram bot token
 - Python 3.8+
 - root access
 
-
 ## Usage
 
-The service starts automatically:
-
-```bash
-systemctl status owl-guard
-```
+The service starts automatically
 
 Logs: `/var/log/owl-guard.log`.
+
+## CLI Commands
+
+### Get value
+
+```bash
+owl-guard get <key>
+```
+
+### Set value
+
+```bash
+owl-guard set <key> <value>
+```
+
+### Invoke command line help
+
+```bash
+owl-guard get --help
+owl-guard get -h
+
+owl-guard set --help
+owl-guard set -h
+```
 
 ## License
 
