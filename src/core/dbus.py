@@ -1,5 +1,5 @@
 import asyncio
-from typing import Optional, Dict, Any
+from typing import Any
 
 from dbus_next.aio import MessageBus, ProxyInterface
 from dbus_next import BusType
@@ -11,7 +11,7 @@ from utils.logger.log_manager import get_logger
 
 class DBusConnector:
     def __init__(self, bus_type: BusType = BusType.SYSTEM):
-        self._bus: Optional[MessageBus] = None
+        self._bus: MessageBus | None = None
         self._bus_type = bus_type
         self._logger = get_logger()
         self._timeout = DBUS_CORE_SESSION_TIMEOUT
@@ -27,10 +27,11 @@ class DBusConnector:
                 raise
         return self._bus
 
-    def shutdown(self):
+    def shutdown(self) -> None:
         self._logger.info("Shutdown initiated")
         self._shutdown_event.set()
-        self._bus.disconnect()
+        if self._bus is not None:
+            self._bus.disconnect()
 
     async def wait_for_shutdown(self):
         await self._shutdown_event.wait()
@@ -62,7 +63,7 @@ class LoginSessionService:
         self._bus = dbus_core
         self._logger = get_logger()
 
-    async def get_session_property(self, session_id: str, path: str) -> Dict[str, Any]:
+    async def get_session_property(self, session_id: str, path: str) -> dict[str, Any]:
         try:
             self._logger.debug(f'Get session {session_id} properties')
             interface = await self._bus.get_bus_interface(bus_name=self.LOGIN_BUS_NAME, path=path,
