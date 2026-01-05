@@ -1,8 +1,8 @@
-import asyncio
 from datetime import datetime
 from inspect import stack
+from typing import Any
 
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession
 
 class AsyncMessageSender:
     def __init__(self, token: str, user_id: str, url:str = 'https://api.telegram.org/bot'):
@@ -10,7 +10,7 @@ class AsyncMessageSender:
         self._url = f'{url}'
         self._token = token
 
-    async def send_message_to_user(self, message):
+    async def send_message_to_user(self, message) -> dict[str, Any]:
         body = {"chat_id": self._user_id, "text": message}
         async with ClientSession() as session:
             response = await session.post(url=f'{self._url}{self._token}/sendMessage', data=body)
@@ -19,7 +19,7 @@ class AsyncMessageSender:
             return data
 
 
-def human_read_response(payload: dict):
+def human_read_response(payload: dict) -> str:
     lines = []
     source_func = stack()[1].function.replace('_', ' ')
     for key, value in payload.items():
