@@ -23,7 +23,7 @@ The script sets up the service, dependencies, and prompts for Telegram bot token
 ## Requirements
 
 - Linux with systemd
-- Python 3.8+
+- Python 3.10+
 - root access
 
 ## Usage
