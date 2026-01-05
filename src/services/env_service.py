@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 class EnvService:
     def __init__(self, env_path):
         self.env_path = env_path
@@ -14,7 +11,7 @@ class EnvService:
         with open(self.env_path, 'w') as file:
             file.writelines(new_data)
 
-    def get_env_value(self, key: str) -> Optional[str]:
+    def get_env_value(self, key: str) -> str | None:
         lines = self.read_env()
         for line in lines:
             if line.startswith(key):
