@@ -87,7 +87,9 @@ fi
 
 cat > /usr/local/bin/owl-guard <<'EOF'
 #!/bin/bash
-cd /opt/owl-guard/src && exec python3 /opt/owl-guard/src/cli.py "$@"
+VENV_PATH="/opt/owl-guard/venv"
+cd /opt/owl-guard/src || exit 1
+exec "$VENV_PATH/bin/python" /opt/owl-guard/src/cli.py "$@"
 EOF
 chmod +x /usr/local/bin/owl-guard
 
