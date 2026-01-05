@@ -1,5 +1,6 @@
 from argparse import Namespace
 from re import compile
+from typing import Callable
 
 from services.env_service import env_service
 
@@ -45,7 +46,7 @@ class CLIValidator:
             raise ValueError('must be valid https URL')
         return args_value
 
-    def _get_validator(self, key: str):
+    def _get_validator(self, key: str) -> Callable[[str], str]:
         if key in self.INTEGER_KEYS:
             return self._validate_key_isdigit
         if key in self.TELEGRAM_TOKEN_KEY:
