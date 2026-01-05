@@ -102,8 +102,9 @@ source "${VENV_PATH}/bin/activate"
 
 echo "Install requirements"
 if [ -f "${SERVICE_PATH}/requirements.txt" ]; then
-    pip install --upgrade pip
-    pip install -r "${SERVICE_PATH}/requirements.txt"
+    pip install --upgrade pip -q
+    pip install -r "${SERVICE_PATH}/requirements.txt" -q
+    echo "Requirements have been successfully installed"
 fi
 
 cat > /usr/local/bin/owl-guard <<'EOF'
