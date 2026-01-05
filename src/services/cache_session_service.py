@@ -1,5 +1,4 @@
-import logging
-from typing import Dict, Any, Optional
+from typing import Any
 
 from utils.logger.log_manager import get_logger
 
@@ -7,9 +6,9 @@ from utils.logger.log_manager import get_logger
 class SessionCacheService:
     def __init__(self):
         self._logger = get_logger()
-        self._data: Dict[str, Dict[str, Any]] = {}
+        self._data: dict[str, dict[str, Any]] = {}
 
-    def session_add(self, session_id: str, session_data: Dict[str, Any]):
+    def session_add(self, session_id: str, session_data: dict[str, Any]) -> None:
         try:
             self._data[session_id] = session_data
             self._logger.debug(f"Session added in cache: {session_id}")
@@ -17,7 +16,7 @@ class SessionCacheService:
             self._logger.error(f'Exception on cache session adder {e}')
             raise
 
-    def session_get(self, session_id: str) -> Dict[str, Any]:
+    def session_get(self, session_id: str) -> dict[str, Any]:
         session = self._data.get(session_id)
         if not session:
             self._logger.debug(f"Session not found in cache: {session_id}")
@@ -30,5 +29,5 @@ class SessionCacheService:
         self._logger.debug(f"Session not in cache: {session_id}")
         return False
 
-    def all_session_get_info(self) -> Optional[Dict[str, Dict[str, Any]]]:
+    def all_session_get_info(self) -> dict[str, dict[str, Any]] | None:
         return self._data.copy()
