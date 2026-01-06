@@ -62,10 +62,12 @@ python_version_check
 detect_pcg_manager
 install_required_software
 
-echo "Start getting file from repository"
-if ! wget  "${REPO_URL}" -O /tmp/owlguard.zip; then
+echo "Getting file from repository"
+if ! wget --quiet "${REPO_URL}" -O /tmp/owlguard.zip; then
   echo "No file on repository"
   exit 1
+else
+  echo "Files downloaded successfully"
 fi
 
 unzip -q -o /tmp/owlguard.zip -d  "${SERVICE_PATH}"
@@ -94,9 +96,7 @@ if [ -n "${TELEGRAM_USER_ID}" ]; then
         echo "TELEGRAM_USER_ID='${TELEGRAM_USER_ID}'" >> "${ENV_PATH}"
 fi
 cp "${SERVICE_PATH}/owl-guard.service" /etc/systemd/system/
-echo "service unit create"
 
-echo "Create virtualenv"
 python3 -m venv "${VENV_PATH}"
 source "${VENV_PATH}/bin/activate"
 
@@ -116,7 +116,7 @@ EOF
 chmod +x /usr/local/bin/owl-guard
 
 systemctl daemon-reload
-echo "systemd reload"
 systemctl enable owl-guard.service
 systemctl start owl-guard.service
-echo "ssh-owl start"
+echo "Owl-guard started"
+echo "Complete"
