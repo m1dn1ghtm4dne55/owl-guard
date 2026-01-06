@@ -52,7 +52,7 @@ install_required_software() {
       ${PKG_MGR} update
       ${PKG_MGR} install -y "${missing[@]}"
   else
-    echo "Installation cancelled."
+    echo "Installation cancelled"
     exit 1
   fi
 }
